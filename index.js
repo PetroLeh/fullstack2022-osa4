@@ -1,13 +1,10 @@
-require('dotenv').config()
+const { PORT, mongoUrl } = require('./utils/config')
 const http = require('http')
 const express = require('express')
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
 const Blog = require('./models/blog')
-
-const PORT = process.env.PORT || 3003
-const mongoUrl = process.env.MONGODB_URI
 
 mongoose.connect(mongoUrl)
 
