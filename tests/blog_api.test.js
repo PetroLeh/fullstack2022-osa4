@@ -3,6 +3,7 @@ const supertest = require('supertest')
 const Blog = require('../models/blog')
 const helper = require('./test_helper')
 const app = require('../app')
+const blog = require('../models/blog')
 
 const api = supertest(app)
 
@@ -107,6 +108,34 @@ test('a new blog has to have an url', async () => {
     .post('/api/blogs')
     .send(newBlog)
     .expect(400)
+})
+
+test('a blog can be removed', async () => {
+    const blogsAtStart = await helper.blogsInDB()
+    const blogToRemove = blogsAtStart[0]
+    
+    await api
+        .delete(`/api/blogs/${blogToRemove.id}`)
+        .expect(204)
+    
+    const blogsAtEnd = await helper.blogsInDB()
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
+    expect(blogsAtEnd).not.toContainEqual(blogToRemove)
+})
+
+test('a blog can be updated', async () => {
+    const blogsAtStart = await helper.blogsInDB()
+    const blogToUpdate = blogsAtStart[0]
+ 
+    const updatedBlog = {...blogToUpdate, likes: blogToUpdate.likes + 1}
+    
+    const response = await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send(updatedBlog)
+        .expect(201)
+
+    const receivedBlog = response.body
+    expect(receivedBlog.likes).toBe(blogToUpdate.likes + 1)    
 })
 
 afterAll(() => {

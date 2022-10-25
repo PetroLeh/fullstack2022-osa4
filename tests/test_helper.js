@@ -62,8 +62,14 @@ const listWithManyBlogs = [
     }  
   ]
 
+  const blogsInDB = async () => {
+    const blogs = await Blog.find({})
+    return blogs.map(b => b.toJSON())
+  }
+
   module.exports = {
     emptyList,
     listWithOneBlog,
-    listWithManyBlogs
+    listWithManyBlogs,
+    blogsInDB
   }
